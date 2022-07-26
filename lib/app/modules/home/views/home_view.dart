@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:weatherapp/app/data/models/weathermode/main.dart';
+import 'package:weatherapp/app/data/models/weathermode/weathermode.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -13,13 +16,16 @@ class HomeView extends GetView<HomeController> {
       body: Center(
         child: GetBuilder<HomeController>(
           builder: ((controller) {
-            return Column(
+            return ListView(
               children: [
                 Expanded(
                   flex: 1,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(25),
+                      ),
                       // color: Colors.blue,
                       image: DecorationImage(
                           image: NetworkImage(
@@ -264,7 +270,6 @@ class HomeView extends GetView<HomeController> {
                                                             ),
                                                           )
                                                         ])),
-                                                           
                                               ],
                                             ),
                                           ],
@@ -281,7 +286,7 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                 ),
-                middlesection()
+                middlesection(),
               ],
             );
           }),
@@ -292,7 +297,7 @@ class HomeView extends GetView<HomeController> {
 }
 
 class middlesection extends StatelessWidget {
-   middlesection({
+  middlesection({
     Key? key,
   }) : super(key: key);
   HomeController controller = Get.put(HomeController());
@@ -303,44 +308,152 @@ class middlesection extends StatelessWidget {
         flex: 2,
         child: Stack(
           children: [
-                      
             Padding(
-              padding: const EdgeInsets.symmetric(vertical:138.0),
+              padding: const EdgeInsets.symmetric(vertical: 138.0),
               child: Container(
                 child: Align(
-                  alignment: Alignment.topLeft,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                             Container(
-                              child: Text(
-                                'other city'.toUpperCase(),
-                                style: Theme.of(context)
-                                    .textTheme 
-                                    .caption!
-                                    .copyWith(
-                                      fontSize: 16,
-                                      fontFamily: 'flutterfonts',
-                                      color: Colors.black45,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            child: Text(
+                              'other city'.toUpperCase(),
+                              style:
+                                  Theme.of(context).textTheme.caption!.copyWith(
+                                        fontSize: 16,
+                                        fontFamily: 'flutterfonts',
+                                        color: Colors.black45,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                             ),
-                             Container(
-                              height: 150,
-                              child: ListView.separated(
-                              physics: BouncingScrollPhysics(),
+                          ),
+                          Container(
+                            height: 150,
+                            child: ListView.separated(
+                                physics: BouncingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
-                                itemBuilder: (context,index){
-                                return Text("con");
-                              }, separatorBuilder: (context,index){
-                                return Divider();
-
-                              }, itemCount: 4),)
-                          ]
-                        )
-                  
-                ),
+                                itemBuilder: (context, index) {
+                                  controller.weatherList.isNotEmpty
+                                      ? controller.data =
+                                          controller.weatherList[index]
+                                      : null;
+                                  return Container(
+                                    width: 140,
+                                    height: 150,
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Container(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              (controller.data != null)
+                                                  ? '${controller.data.name}'
+                                                  : '',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption!
+                                                  .copyWith(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black45,
+                                                    fontFamily: 'flutterfonts',
+                                                  ),
+                                            ),
+                                            Text(
+                                              (controller.data != null)
+                                                  ? '${(controller.data.main!.temp! - 273.15).round().toString()}\u2103'
+                                                  : '',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption!
+                                                  .copyWith(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black45,
+                                                    fontFamily: 'flutterfonts',
+                                                  ),
+                                            ),
+                                            Container(
+                                              width: 50,
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: NetworkImage(
+                                                      "https://cdn2.iconfinder.com/data/icons/weather-flat-14/64/weather02-512.png"),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              (controller.data != null)
+                                                  ? '${controller.data.weather![0].description}'
+                                                  : '',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption!
+                                                  .copyWith(
+                                                    color: Colors.black45,
+                                                    fontFamily: 'flutterfonts',
+                                                    fontSize: 14,
+                                                  ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  return Divider();
+                                },
+                                itemCount: controller.weatherList.length),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'forcast next 5 days'.toUpperCase(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black45,
+                                      ),
+                                ),
+                                Icon(
+                                  Icons.next_plan_outlined,
+                                  color: Colors.black45,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 250,
+                              child: GetBuilder<HomeController>(
+                                  builder: (controller) {
+                                return SfCartesianChart(
+                                  primaryXAxis: CategoryAxis(),
+                                  series: <ChartSeries<Main, String>>[
+                                    SplineSeries<Main, String>(
+                                      dataSource: controller.fiveDaysData,
+                                      xValueMapper: (Main f, _) =>
+                                          f.pressure.toString(),
+                                      yValueMapper: (Main f, _) => f.temp,
+                                    ),
+                                  ],
+                                );
+                              }))
+                        ])),
               ),
             ),
           ],
